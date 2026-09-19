@@ -10,8 +10,8 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 
 ## Phase 0 — Setup & Scaffolding
 
-- [ ] Create repo, `main` branch, `.gitignore` (vendor, node_modules, `.env`, storage)
-- [ ] Decide monorepo layout: `/backend`, `/frontend`, `/docs`, `docker-compose.yml`, `README.md`
+- [x] ~~Create repo, `main` branch, `.gitignore` (vendor, node_modules, `.env`, storage)~~ [19/09/2026]
+- [x] ~~Decide monorepo layout: `/backend`, `/frontend`, `/docs`, `docker-compose.yml`, `README.md`~~ [19/09/2026]
 - [ ] Commit early and often — commit history is evaluated as evidence of organization
 - [ ] Scaffold Laravel API (`composer create-project laravel/laravel backend`)
 - [ ] Scaffold React + TS (`npm create vite@latest frontend -- --template react-ts`)

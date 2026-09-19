@@ -1,0 +1,32 @@
+name: VLab
+
+secrets:
+  vlab_key:
+    file: ./.secrets/database.key
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  auth-data:
+    driver: local
+
+services:
+  database:
+    image: postgres:18.2-alpine3.23
+    container_name: database
+    restart: always
+    attach: false
+    secrets:
+      - vlab_key
+    ports:
+      - 5432:5432
+    networks:
+      - network
+    volumes:
+      - auth-data:/var/lib/postgresql  
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: vlab_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/vlab_key
