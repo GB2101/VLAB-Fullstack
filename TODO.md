@@ -44,10 +44,10 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 - [x] ~~Factory + Seeder with **fictional data only** (use `fake()->name()` in pt_BR)~~ [20/09/2026]
 
 ### Business rules (must live outside the controller)
-- [ ] New records always start as `RECEBIDA`
-- [ ] Unique `protocolo` generated automatically (e.g. `SOL-2026-000123`) — handle collisions
+- [x] ~~New records always start as `RECEBIDA`~~ [20/09/2026]
+- [x] ~~Unique `protocolo` generated automatically (e.g. `SOL-2026-000123`) — handle collisions~~ [20/09/2026]
 - [ ] `justificativa_prioridade` required when `prioridade = URGENTE`
-- [ ] `data_criacao` set on insert; `data_atualizacao` touched on every update
+- [x] ~~`data_criacao` set on insert; `data_atualizacao` touched on every update~~ [20/09/2026]
 - [ ] Central, testable status transition machine:
   - RECEBIDA → EM_ANALISE, CANCELADA
   - EM_ANALISE → AGENDADA, CANCELADA
@@ -57,13 +57,13 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 - [ ] Invalid transition throws a domain exception → 409 (or 422) with a clear message
 
 ### API REST
-- [ ] `POST   /api/v1/solicitacoes` — create
+- [x] ~~`POST   /api/v1/solicitacoes` — create~~ [20/09/2026]
 - [x] ~~`GET    /api/v1/solicitacoes` — paginated list + filters `status`, `categoria`, `prioridade`~~ [20/09/2026]
 - [x] ~~`GET    /api/v1/solicitacoes/{id}` — detail (404 when missing)~~ [20/09/2026]	
 - [ ] `PATCH  /api/v1/solicitacoes/{id}/status` — status update respecting transitions
 - [ ] (optional) `GET /api/v1/solicitacoes/summary` — counts by status/priority for the dashboard
 - [ ] Form Requests for create and status update (validation lives there, not in the controller)
-- [ ] API Resources for output — stable, documented response shape
+- [x] ~~API Resources for output — stable, documented response shape~~ [20/09/2026]
 - [ ] Centralized exception handler: consistent JSON error envelope, no stack traces or internal details leaked
 - [ ] Correct HTTP codes: 201, 200, 404, 422, 409, 500
 

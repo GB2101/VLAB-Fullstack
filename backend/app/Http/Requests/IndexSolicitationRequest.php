@@ -9,7 +9,6 @@ use Illuminate\Validation\Rule;
 use App\Enums\Category;
 use App\Enums\Priority;
 use App\Enums\Status;
-use Override;
 
 class IndexSolicitationRequest extends FormRequest
 {
@@ -31,18 +30,39 @@ class IndexSolicitationRequest extends FormRequest
         return [
             'page' => ['sometimes', 'integer', 'min:1'],
             'pageSize' => ['sometimes', 'integer', 'min:1'],
-            'categoria' => ['sometimes', 'array', Rule::in(Category::cases())],
-            'prioridade' => ['sometimes', 'array', Rule::in(Priority::cases())],
-            'status' => ['sometimes', 'array', Rule::in(Status::cases())],
+
+            'categoria' => ['sometimes', 'array'],
+            'categoria.*' => [Rule::enum(Category::class)],
+
+            'prioridade' => ['sometimes', 'array'],
+            'prioridade.*' => [Rule::enum(Priority::class)],
+
+            'status' => ['sometimes', 'array'],
+            'status.*' => [Rule::enum(Status::class)],
         ];
     }
 
-    public function prepareForValidation()
+    protected function prepareForValidation(): void
     {
         $this->merge([
-            'categoria' => $this->categoria ? explode(',', $this->categoria ?? '') : [],
-            'prioridade' => $this->prioridade ? explode(',', $this->prioridade ?? '') : [],
-            'status' => $this->status ? explode(',', $this->status ?? '') : [],
+            'categoria' => is_string($this->categoria)
+                ? explode(',', $this->categoria)
+                : ($this->filled('categoria') ? $this->categoria : []),
+            'prioridade' => is_string($this->prioridade)
+                ? explode(',', $this->prioridade)
+                : ($this->filled('prioridade') ? $this->prioridade : []),
+            'status' => is_string($this->status)
+                ? explode(',', $this->status)
+                : ($this->filled('status') ? $this->status : []),
+        ]);
+    }
+
+    protected function passedValidation(): void
+    {
+        $this->merge([
+            'categoria' => array_map(fn ($value) => Category::from($value), $this->categoria ?? []),
+            'prioridade' => array_map(fn ($value) => Priority::from($value), $this->prioridade ?? []),
+            'status' => array_map(fn ($value) => Status::from($value), $this->status ?? []),
         ]);
     }
 }

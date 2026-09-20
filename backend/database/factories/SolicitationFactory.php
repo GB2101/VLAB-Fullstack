@@ -2,8 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\Solicitation;
 use Illuminate\Database\Eloquent\Factories\Factory;
+
+use App\Enums\Category;
+use App\Enums\Priority;
+use App\Enums\Status;
+use App\Models\Solicitation;
 
 /**
  * @extends Factory<Solicitation>
@@ -19,23 +23,26 @@ class SolicitationFactory extends Factory
     {
         $this->faker = \Faker\Factory::create('pt_BR'); // Set locale to Brazilian Portuguese
 
-        $priority = $this->faker->randomElement(['BAIXA', 'MEDIA', 'ALTA', 'URGENTE']);
-        $category = $this->faker->randomElement(['CONSULTA', 'EXAME', 'VACINACAO', 'OUTRO']);
-        $status = $this->faker->randomElement(['RECEBIDA', 'EM_ANALISE', 'AGENDADA', 'CONCLUIDA', 'CANCELADA']);
+        $priority = $this->faker->randomElement(Priority::cases());
+        $category = $this->faker->randomElement(Category::cases());
+        $status = $this->faker->randomElement(Status::cases());
+
+        $justification = $priority === Priority::Urgent ? $this->faker->sentence() : null;
 
         $createdAt = $this->faker->dateTimeBetween('-1 year', '-1 day');
         $updatedAt = $this->faker->dateTimeBetween($createdAt, 'now');
 
-        $protocol = $this->faker->unique()->numerify(substr($category, 0, 3) . '-####');
+        $random = strtoupper($this->faker->unique->regexify('[A-Z0-9]{6}'));
+        $protocol = substr($category->value, 0, 3) . '-' . date('ymd-') . $random;
 
         return [
             'protocolo' => $protocol,
             'nome_solicitante' => $this->faker->name(),
+            'descricao' => $this->faker->paragraph(),
             'categoria' => $category,
             'prioridade' => $priority,
             'status' => $status,
-            'descricao' => $this->faker->paragraph(),
-            'justificativa_prioridade' => $priority === 'URGENTE' ? $this->faker->sentence() : null,
+            'justificativa_prioridade' => $justification,
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,
         ];

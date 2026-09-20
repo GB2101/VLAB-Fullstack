@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Solicitation;
 use App\Http\Requests\IndexSolicitationRequest;
 use App\Http\Requests\StoreSolicitationRequest;
 use App\Http\Requests\UpdateSolicitationRequest;
 use App\Http\Resources\SolicitationResource;
 use App\Http\Resources\SolicitationCollection;
-
+use App\Http\Services\SolicitationService;
 
 class SolicitationController extends Controller
 {
+    public function __construct(
+        public readonly SolicitationService $solicitationService
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -38,7 +41,8 @@ class SolicitationController extends Controller
      */
     public function store(StoreSolicitationRequest $request)
     {
-        //
+        $solicitation = $this->solicitationService->create($request);
+        return new SolicitationResource($solicitation);
     }
 
     /**
