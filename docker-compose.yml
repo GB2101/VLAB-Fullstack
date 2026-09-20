@@ -27,10 +27,7 @@ services:
     depends_on:
       - database
     env_file:
-      - .env
-    environment:
-      DB_HOST: database
-      DB_PASSWORD_FILE: /run/secrets/vlab_key
+      - ./backend/.env.docker
 
   database:
     image: postgres:18.2-alpine3.23
