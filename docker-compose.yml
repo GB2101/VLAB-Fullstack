@@ -13,6 +13,25 @@ volumes:
     driver: local
 
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    attach: false
+    ports:
+      - 8000:8000
+    networks:
+      - network
+    depends_on:
+      - database
+    env_file:
+      - .env
+    environment:
+      DB_HOST: database
+      DB_PASSWORD_FILE: /run/secrets/vlab_key
+
   database:
     image: postgres:18.2-alpine3.23
     container_name: database
