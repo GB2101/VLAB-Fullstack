@@ -40,37 +40,37 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 - [ ] Decide & justify enum strategy (PG enum vs varchar + CHECK constraint) in README
 - [x] ~~NOT NULL constraints on required fields; unique index on `protocolo`~~ [20/09/2026]
 - [ ] Indexes on `status`, `categoria`, `prioridade` (they back the list filters)
-- [ ] `Solicitacao` Eloquent model with casts + PHP enums for the four value sets
+- [x] ~~`Solicitacao` Eloquent model with casts + PHP enums for the four value sets~~ [20/09/2026]
 - [x] ~~Factory + Seeder with **fictional data only** (use `fake()->name()` in pt_BR)~~ [20/09/2026]
 
 ### Business rules (must live outside the controller)
 - [x] ~~New records always start as `RECEBIDA`~~ [20/09/2026]
 - [x] ~~Unique `protocolo` generated automatically (e.g. `SOL-2026-000123`) — handle collisions~~ [20/09/2026]
-- [ ] `justificativa_prioridade` required when `prioridade = URGENTE`
+- [x] ~~`justificativa_prioridade` required when `prioridade = URGENTE`~~ [20/09/2026]
 - [x] ~~`data_criacao` set on insert; `data_atualizacao` touched on every update~~ [20/09/2026]
-- [ ] Central, testable status transition machine:
-  - RECEBIDA → EM_ANALISE, CANCELADA
-  - EM_ANALISE → AGENDADA, CANCELADA
-  - AGENDADA → CONCLUIDA, CANCELADA
-  - CONCLUIDA → *(final)*
-  - CANCELADA → *(final)*
-- [ ] Invalid transition throws a domain exception → 409 (or 422) with a clear message
+- [x] ~~Central, testable status transition machine:~~ [20/09/2026]
+  - [x] ~~RECEBIDA → EM_ANALISE, CANCELADA~~ [20/09/2026]
+  - [x] ~~EM_ANALISE → AGENDADA, CANCELADA~~ [20/09/2026]
+  - [x] ~~AGENDADA → CONCLUIDA, CANCELADA~~ [20/09/2026]
+  - [x] ~~CONCLUIDA → *(final)*~~ [20/09/2026]
+  - [x] ~~CANCELADA → *(final)*~~ [20/09/2026]
+- [x] ~~Invalid transition throws a domain exception → 409 (or 422) with a clear message~~ [20/09/2026]
 
 ### API REST
 - [x] ~~`POST   /api/v1/solicitacoes` — create~~ [20/09/2026]
 - [x] ~~`GET    /api/v1/solicitacoes` — paginated list + filters `status`, `categoria`, `prioridade`~~ [20/09/2026]
 - [x] ~~`GET    /api/v1/solicitacoes/{id}` — detail (404 when missing)~~ [20/09/2026]	
-- [ ] `PATCH  /api/v1/solicitacoes/{id}/status` — status update respecting transitions
+- [x] ~~`PATCH  /api/v1/solicitacoes/{id}/status` — status update respecting transitions~~ [20/09/2026]
 - [ ] (optional) `GET /api/v1/solicitacoes/summary` — counts by status/priority for the dashboard
-- [ ] Form Requests for create and status update (validation lives there, not in the controller)
+- [x] ~~Form Requests for create and status update (validation lives there, not in the controller)~~ [20/09/2026]
 - [x] ~~API Resources for output — stable, documented response shape~~ [20/09/2026]
 - [ ] Centralized exception handler: consistent JSON error envelope, no stack traces or internal details leaked
 - [ ] Correct HTTP codes: 201, 200, 404, 422, 409, 500
 
 ### Architecture
-- [ ] Thin controllers → Service/Action layer for business rules
-- [ ] Dependency injection; transactions where a write spans more than one step
-- [ ] Organize by domain (e.g. `app/Domain/Solicitacoes/...`) — only abstractions that earn their keep
+- [x] ~~Thin controllers → Service/Action layer for business rules~~ [20/09/2026]
+- [x] ~~Dependency injection; transactions where a write spans more than one step~~ [20/09/2026]
+- [x] ~~Organize by domain (e.g. `app/Domain/Solicitacoes/...`) — only abstractions that earn their keep~~ [20/09/2026]
 - [ ] Keep every architectural decision explainable in the interview
 
 ---
@@ -116,9 +116,9 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 
 ## Validation, Security & Privacy — 10 pts
 
-- [ ] Strict validation on every input (types, enum membership, max lengths)
+- [x] ~~Strict validation on every input (types, enum membership, max lengths)~~ [20/09/2026]
 - [ ] No credentials, tokens or passwords committed — `.env` ignored, `.env.example` present
-- [ ] Fictional data only; no real medical or personal information
+- [x] ~~Fictional data only; no real medical or personal information~~ [20/09/2026]
 - [ ] Error responses reveal nothing internal (no SQL, no file paths)
 - [ ] If auth is added: Sanctum + documented profiles/policies
 

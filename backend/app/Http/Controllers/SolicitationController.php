@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+
+use App\Enums\Status;
 use App\Models\Solicitation;
 use App\Http\Requests\IndexSolicitationRequest;
 use App\Http\Requests\StoreSolicitationRequest;
-use App\Http\Requests\UpdateSolicitationRequest;
+use App\Http\Requests\PatchSolicitationRequest;
 use App\Http\Resources\SolicitationResource;
 use App\Http\Resources\SolicitationCollection;
 use App\Http\Services\SolicitationService;
@@ -42,7 +45,7 @@ class SolicitationController extends Controller
     public function store(StoreSolicitationRequest $request)
     {
         $solicitation = $this->solicitationService->create($request);
-        return new SolicitationResource($solicitation);
+        return response()->json(new SolicitationResource($solicitation), 201);
     }
 
     /**
@@ -53,19 +56,21 @@ class SolicitationController extends Controller
         return new SolicitationResource($solicitation);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateSolicitationRequest $request, Solicitation $solicitation)
+    public function transition(PatchSolicitationRequest $request, Solicitation $solicitation)
     {
-        //
-    }
+        try {
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Solicitation $solicitation)
-    {
-        //
+            $status = Status::from($request->input('status'));
+            $this->solicitationService->statusTransition($solicitation, $status);
+
+            return response()->json(status: 204);
+        } catch (Exception $e) {
+            return response()->json(
+                status: 400,
+                data: [
+                    'message' => $e->getMessage(),
+                ]
+            );
+        }
     }
 }

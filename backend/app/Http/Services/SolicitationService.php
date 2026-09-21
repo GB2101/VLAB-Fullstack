@@ -9,12 +9,13 @@ use App\Enums\Category;
 use App\Enums\Priority;
 use App\Enums\Status;
 use App\Http\Requests\StoreSolicitationRequest;
+use InvalidArgumentException;
 
 class SolicitationService
 {
     public static function create(StoreSolicitationRequest $request): Solicitation {
         $status = Status::Received;
-        $priority = $request->input('prioridade', Priority::Low);
+        $priority = $request->input('prioridade');
         $category = $request->input('categoria');
         $protocol = self::generateProtocol($category);
 
@@ -31,10 +32,23 @@ class SolicitationService
         return $solicitation;
     }
 
+    public static function statusTransition(Solicitation $solicitation, Status $target) {
+        $status = $solicitation->status;
+
+        if (!$status->validTransition($target)) {
+            throw new InvalidArgumentException("A transição do Status {$status->value} para {$target->value} não é permitida.");
+        }
+
+        $solicitation->update([
+            'status' => $target,
+        ]);
+    }
+
+
     public static function generateProtocol(string $category): string {
         do {
             $initials = strtoupper(substr($category, 0, 3));
-            $protocol = $initials . '-' . date('Ymd-') . strtoupper(Str::random(8));
+            $protocol = $initials . '-' . date('ymd-') . strtoupper(Str::random(6));
         } while (Solicitation::where('protocolo', $protocol)->exists());
 
         return $protocol;

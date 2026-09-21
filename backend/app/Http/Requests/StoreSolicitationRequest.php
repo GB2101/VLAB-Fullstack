@@ -30,7 +30,7 @@ class StoreSolicitationRequest extends FormRequest
             'nome_solicitante' => ['required', 'string', 'max:255'],
             'descricao' => ['required', 'string'],
             'categoria' => ['required', Rule::enum(Category::class)],
-            'prioridade' => ['sometimes', Rule::enum(Priority::class)],
+            'prioridade' => ['required', Rule::enum(Priority::class)],
             'justificativa_prioridade' => ['nullable', 'string', 'required_if:prioridade,' . Priority::Urgent->value],
         ];
     }
