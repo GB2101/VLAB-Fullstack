@@ -56,6 +56,11 @@ class SolicitationController extends Controller
         return new SolicitationResource($solicitation);
     }
 
+    public function summary()
+    {
+        return $this->solicitationService->summary();
+    }
+
     public function transition(PatchSolicitationRequest $request, Solicitation $solicitation)
     {
         try {

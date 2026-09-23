@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Solicitation;
 use App\Enums\Category;
@@ -13,7 +14,7 @@ use InvalidArgumentException;
 
 class SolicitationService
 {
-    public static function create(StoreSolicitationRequest $request): Solicitation {
+    public function create(StoreSolicitationRequest $request): Solicitation {
         $status = Status::Received;
         $priority = $request->input('prioridade');
         $category = $request->input('categoria');
@@ -32,7 +33,7 @@ class SolicitationService
         return $solicitation;
     }
 
-    public static function statusTransition(Solicitation $solicitation, Status $target) {
+    public function statusTransition(Solicitation $solicitation, Status $target) {
         $status = $solicitation->status;
 
         if (!$status->validTransition($target)) {
@@ -42,6 +43,28 @@ class SolicitationService
         $solicitation->update([
             'status' => $target,
         ]);
+    }
+
+    public function summary() {
+        $collect = fn ($collection) => $collection->reduce(fn ($carry, $item) => $carry + $item->total);
+
+        $summary = Solicitation::query()
+            ->select('status', 'prioridade', DB::raw('count(*) as total'))
+            ->groupBy('status', 'prioridade')
+            ->get();
+
+        $status = $summary
+            ->groupBy(fn ($item) => $item->status->value)
+            ->map($collect);
+
+        $priority = $summary
+            ->groupBy(fn ($item) => $item->prioridade->value)
+            ->map($collect);
+
+        return [
+            'status' => $status,
+            'prioridade' => $priority,
+        ];
     }
 
 

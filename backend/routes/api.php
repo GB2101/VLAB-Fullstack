@@ -20,9 +20,13 @@ Route::group(['prefix' => 'v1'], function () {
     Route::apiResource('solicitacoes', SolicitationController::class, [])
         ->parameters(['solicitacoes' => 'solicitation'])
         ->except(['update', 'destroy'])
+        ->whereNumber('solicitation')
         ->missing($MissingID);
 
     Route::patch('/solicitacoes/{solicitation}/status', [SolicitationController::class, 'transition'])
         ->name('solicitacoes.patch')
+        ->whereNumber('solicitation')
         ->missing($MissingID);
+
+    Route::get('/solicitacoes/summary', [SolicitationController::class, 'summary'])->name('solicitacoes.summary');
 });
