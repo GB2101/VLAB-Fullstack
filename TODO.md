@@ -14,7 +14,7 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 - [x] ~~Decide monorepo layout: `/backend`, `/frontend`, `/docs`, `docker-compose.yml`, `README.md`~~ [19/09/2026]
 - [ ] Commit early and often — commit history is evaluated as evidence of organization
 - [x] ~~Scaffold Laravel API (`composer create-project laravel/laravel backend`)~~ [20/09/2026]
-- [ ] Scaffold React + TS (`npm create vite@latest frontend -- --template react-ts`)
+- [x] ~~Scaffold React + TS (`npm create vite@latest frontend -- --template react-ts`)~~ [22/09/2026]
 - [ ] `docker-compose.yml` with 3 services: `db` (postgres), `api` (php-fpm/nginx or artisan serve), `web` (vite/nginx)
 - [ ] Dockerfiles for api and web; named volume for postgres data
 - [ ] `.env.example` for backend **and** frontend — no real secrets anywhere in git
@@ -61,7 +61,7 @@ Deadline: 7 days. Minimum to pass: 60/100 base, **≥6/15 backend**, **≥6/15 f
 - [x] ~~`GET    /api/v1/solicitacoes` — paginated list + filters `status`, `categoria`, `prioridade`~~ [20/09/2026]
 - [x] ~~`GET    /api/v1/solicitacoes/{id}` — detail (404 when missing)~~ [20/09/2026]	
 - [x] ~~`PATCH  /api/v1/solicitacoes/{id}/status` — status update respecting transitions~~ [20/09/2026]
-- [ ] (optional) `GET /api/v1/solicitacoes/summary` — counts by status/priority for the dashboard
+- [x] ~~(optional) `GET /api/v1/solicitacoes/summary` — counts by status/priority for the dashboard~~ [22/09/2026]
 - [x] ~~Form Requests for create and status update (validation lives there, not in the controller)~~ [20/09/2026]
 - [x] ~~API Resources for output — stable, documented response shape~~ [20/09/2026]
 - [ ] Centralized exception handler: consistent JSON error envelope, no stack traces or internal details leaked
