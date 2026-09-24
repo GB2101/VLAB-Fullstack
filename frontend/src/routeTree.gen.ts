@@ -10,33 +10,78 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SolicitacoesIndexRouteImport } from './routes/solicitacoes_/index'
+import { Route as Solicitacoes_pagesSolicitacoesRouteImport } from './routes/solicitacoes_/_pages/$solicitacoes'
+import { Route as Solicitacoes_pagesRegistrarRouteImport } from './routes/solicitacoes_/_pages/registrar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolicitacoesIndexRoute = SolicitacoesIndexRouteImport.update({
+  id: '/solicitacoes_/',
+  path: '/solicitacoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Solicitacoes_pagesSolicitacoesRoute =
+  Solicitacoes_pagesSolicitacoesRouteImport.update({
+    id: '/solicitacoes_/_pages/$solicitacoes',
+    path: '/solicitacoes/$solicitacoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Solicitacoes_pagesRegistrarRoute =
+  Solicitacoes_pagesRegistrarRouteImport.update({
+    id: '/solicitacoes_/_pages/registrar',
+    path: '/solicitacoes/registrar',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/solicitacoes/': typeof SolicitacoesIndexRoute
+  '/solicitacoes/$solicitacoes': typeof Solicitacoes_pagesSolicitacoesRoute
+  '/solicitacoes/registrar': typeof Solicitacoes_pagesRegistrarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/solicitacoes': typeof SolicitacoesIndexRoute
+  '/solicitacoes/$solicitacoes': typeof Solicitacoes_pagesSolicitacoesRoute
+  '/solicitacoes/registrar': typeof Solicitacoes_pagesRegistrarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/solicitacoes_/': typeof SolicitacoesIndexRoute
+  '/solicitacoes_/_pages/$solicitacoes': typeof Solicitacoes_pagesSolicitacoesRoute
+  '/solicitacoes_/_pages/registrar': typeof Solicitacoes_pagesRegistrarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/solicitacoes/'
+    | '/solicitacoes/$solicitacoes'
+    | '/solicitacoes/registrar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/solicitacoes'
+    | '/solicitacoes/$solicitacoes'
+    | '/solicitacoes/registrar'
+  id:
+    | '__root__'
+    | '/'
+    | '/solicitacoes_/'
+    | '/solicitacoes_/_pages/$solicitacoes'
+    | '/solicitacoes_/_pages/registrar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SolicitacoesIndexRoute: typeof SolicitacoesIndexRoute
+  Solicitacoes_pagesSolicitacoesRoute: typeof Solicitacoes_pagesSolicitacoesRoute
+  Solicitacoes_pagesRegistrarRoute: typeof Solicitacoes_pagesRegistrarRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +93,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solicitacoes_/': {
+      id: '/solicitacoes_/'
+      path: '/solicitacoes'
+      fullPath: '/solicitacoes/'
+      preLoaderRoute: typeof SolicitacoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solicitacoes_/_pages/$solicitacoes': {
+      id: '/solicitacoes_/_pages/$solicitacoes'
+      path: '/solicitacoes/$solicitacoes'
+      fullPath: '/solicitacoes/$solicitacoes'
+      preLoaderRoute: typeof Solicitacoes_pagesSolicitacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solicitacoes_/_pages/registrar': {
+      id: '/solicitacoes_/_pages/registrar'
+      path: '/solicitacoes/registrar'
+      fullPath: '/solicitacoes/registrar'
+      preLoaderRoute: typeof Solicitacoes_pagesRegistrarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SolicitacoesIndexRoute: SolicitacoesIndexRoute,
+  Solicitacoes_pagesSolicitacoesRoute: Solicitacoes_pagesSolicitacoesRoute,
+  Solicitacoes_pagesRegistrarRoute: Solicitacoes_pagesRegistrarRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
