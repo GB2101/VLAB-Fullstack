@@ -1,9 +1,17 @@
 import { Fragment, useState } from 'react';
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { Funnel, ArrowRight } from 'lucide-react';
+import {
+	Funnel,
+	FunnelX,
+	ArrowRight,
+	Loader2,
+	CircleAlert,
+	Inbox,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import {
 	Table,
 	TableBody,
@@ -16,9 +24,12 @@ import {
 
 import { Content } from '@/components/Content';
 import { Filter } from '@/components/Filter';
+import { Navigator } from '@/components/Navigator';
+import { StateMessage } from '@/components/StateMessage';
 
 import values from '@/assets/values.json';
 import { parseDate } from '@/utils/parseDate';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 import { useAxios } from '@/hooks/useAxios';
 import { Paginator } from '@/components/Paginator';
 import type { SearchResults, Solicitation } from '@/types';
@@ -31,56 +42,125 @@ type RawParams = Record<string, unknown>;
 type SearchParams = {
 	page?: number;
 	pageSize?: number;
+	categoria?: Categories[];
+	prioridade?: Priorities[];
 	status?: Status[];
-	// status?: Status[];
-	// categories?: Categories[];
-	// priorities?: Priorities[];
 };
+
+const parseList = <T extends string>(
+	value: unknown,
+	allowed: Record<string, string>,
+): T[] | undefined => {
+	if (!value) return undefined;
+
+	const list = (Array.isArray(value) ? value : String(value).split(','))
+		.map(String)
+		.filter((item): item is T => item in allowed);
+
+	return list.length ? list : undefined;
+};
+
+const toParam = <T,>(list: T[]) => (list.length ? list : undefined);
 
 export const Route = createFileRoute('/solicitacoes_/')({
 	component: RouteComponent,
-	validateSearch: (search: RawParams): SearchParams => {
-		console.log(JSON.stringify(search));
-		return {
-			page: Number(search.page) || undefined,
-			pageSize: Number(search.pageSize) || undefined,
-			status: !search.status
-				? undefined
-				: (Array.isArray(search.status)
-						? search.status
-						: [search.status]
-					).filter((item): item is Status => item in values.status),
-			// categories: (search.categories?.split(',') || []) as Categories[],
-			// priorities: (search.priorities?.split(',') || []) as Priorities[],}
-		};
-	},
+	validateSearch: (search: RawParams): SearchParams => ({
+		page: Number(search.page) || undefined,
+		pageSize: Number(search.pageSize) || undefined,
+		categoria: parseList<Categories>(search.categoria, values.category),
+		prioridade: parseList<Priorities>(search.prioridade, values.priority),
+		status: parseList<Status>(search.status, values.status),
+	}),
 });
 
 function RouteComponent() {
 	const params = Route.useSearch();
+	const navigate = Route.useNavigate();
 
-	const [status, setStatus] = useState<Status[]>([]);
-	const [categories, setCategories] = useState<Categories[]>([]);
-	const [priorities, setPriorities] = useState<Priorities[]>([]);
+	const [status, setStatus] = useState<Status[]>(params.status ?? []);
+	const [categories, setCategories] = useState<Categories[]>(
+		params.categoria ?? [],
+	);
+	const [priorities, setPriorities] = useState<Priorities[]>(
+		params.prioridade ?? [],
+	);
+
+	const applyFilters = () => {
+		navigate({
+			to: '.',
+			search: (prev) => ({
+				...prev,
+				page: undefined,
+				categoria: toParam(categories),
+				prioridade: toParam(priorities),
+				status: toParam(status),
+			}),
+		});
+	};
+
+	const hasFilters =
+		!!params.status ||
+		!!params.categoria ||
+		!!params.prioridade ||
+		!!status.length ||
+		!!categories.length ||
+		!!priorities.length;
+	const clearFilters = () => {
+		setStatus([]);
+		setCategories([]);
+		setPriorities([]);
+
+		navigate({
+			to: '.',
+			search: {},
+		});
+	};
 
 	const axios = useAxios();
-	const { data, error, isError, isPending } = useQuery({
-		queryKey: ['solicitations', params.page, params.pageSize],
-		queryFn: async () => {
-			const { data } = await axios.get<SearchResults<Solicitation>>(
-				'/solicitacoes',
-				// { params },
-			);
-			return data;
+	const { data, error, isError, isPending, refetch, isRefetching } = useQuery(
+		{
+			queryKey: ['solicitations', params],
+			queryFn: async () => {
+				const { data } = await axios.get<SearchResults<Solicitation>>(
+					'/solicitacoes',
+					{ params },
+				);
+				return data;
+			},
 		},
-	});
+	);
 
 	if (isPending) {
-		return <span>Loading...</span>;
+		return (
+			<Content>
+				<StateMessage
+					icon={Loader2}
+					iconClassName='animate-spin'
+					title='Carregando solicitações...'
+				/>
+			</Content>
+		);
 	}
 
 	if (isError && !data) {
-		return <span>Error: {error.message}</span>;
+		return (
+			<Content>
+				<StateMessage
+					icon={CircleAlert}
+					title='Não foi possível carregar as solicitações'
+					description={getErrorMessage(error)}
+					action={
+						<Button
+							variant='outline'
+							disabled={isRefetching}
+							onClick={() => refetch()}
+						>
+							Tentar novamente
+						</Button>
+					}
+				/>
+			</Content>
+		);
 	}
 
 	return (
@@ -91,6 +171,7 @@ function RouteComponent() {
 						<Filter
 							id='Categoria'
 							items={values.category}
+							defaultValue={categories}
 							onValueChange={(values) => {
 								setCategories(values as Categories[]);
 							}}
@@ -98,6 +179,7 @@ function RouteComponent() {
 						<Filter
 							id='Prioridade'
 							items={values.priority}
+							defaultValue={priorities}
 							onValueChange={(values) => {
 								setPriorities(values as Priorities[]);
 							}}
@@ -105,68 +187,101 @@ function RouteComponent() {
 						<Filter
 							id='Status'
 							items={values.status}
+							defaultValue={status}
 							onValueChange={(values) => {
 								setStatus(values as Status[]);
 							}}
 						/>
 					</div>
 
-					<Button>
-						<Funnel />
-						Aplicar Filtros
-					</Button>
+					<ButtonGroup>
+						<Button onClick={applyFilters}>
+							<Funnel />
+							Aplicar Filtros
+						</Button>
+						<Button disabled={!hasFilters} onClick={clearFilters}>
+							<FunnelX />
+						</Button>
+					</ButtonGroup>
 				</div>
 
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Protocolo</TableHead>
-							<TableHead>Solicitante</TableHead>
-							<TableHead>Categoria</TableHead>
-							<TableHead>Prioridade</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead>Última Atualização</TableHead>
-						</TableRow>
-					</TableHeader>
+				{data.data.length === 0 ? (
+					<StateMessage
+						icon={Inbox}
+						title='Nenhuma solicitação encontrada'
+						description={
+							hasFilters
+								? 'Nenhuma solicitação corresponde aos filtros aplicados.'
+								: 'Ainda não há solicitações registradas.'
+						}
+						action={
+							hasFilters ? (
+								<Button variant='outline' onClick={clearFilters}>
+									<FunnelX />
+									Limpar Filtros
+								</Button>
+							) : (
+								<Navigator to='/solicitacoes/registrar'>
+									Nova Solicitação
+								</Navigator>
+							)
+						}
+					/>
+				) : (
+					<Table>
+						<TableHeader>
+							<TableRow>
+								<TableHead>Protocolo</TableHead>
+								<TableHead>Solicitante</TableHead>
+								<TableHead>Categoria</TableHead>
+								<TableHead>Prioridade</TableHead>
+								<TableHead>Status</TableHead>
+								<TableHead>Última Atualização</TableHead>
+							</TableRow>
+						</TableHeader>
 
-					<TableBody>
-						{data.data.map((item) => (
-							<TableRow
-								key={item.id}
-								onClick={() => alert('Clicked')}
-								className='hover:cursor-pointer'
-							>
-								<TableCell>{item.protocolo}</TableCell>
-								<TableCell>{item.nome_solicitante}</TableCell>
-								<TableCell>
-									{values.category[item.categoria]}
-								</TableCell>
-								<TableCell>
-									{values.priority[item.prioridade]}
-								</TableCell>
-								<TableCell>
-									{values.status[item.status]}
-								</TableCell>
-								<TableCell>
-									{parseDate(item.data_atualizacao)}
-								</TableCell>
-								<TableCell>
-									<Button>
-										<ArrowRight />
-									</Button>
+						<TableBody>
+							{data.data.map((item) => (
+								<TableRow key={item.id}>
+									<TableCell>{item.protocolo}</TableCell>
+									<TableCell>{item.nome_solicitante}</TableCell>
+									<TableCell>
+										{values.category[item.categoria]}
+									</TableCell>
+									<TableCell>
+										{values.priority[item.prioridade]}
+									</TableCell>
+									<TableCell>
+										{values.status[item.status]}
+									</TableCell>
+									<TableCell>
+										{parseDate(item.data_atualizacao)}
+									</TableCell>
+									<TableCell>
+										<Navigator
+											to='/solicitacoes/$solicitacoes'
+											params={{
+												solicitacoes: String(item.id),
+											}}
+											size='icon'
+											variant='default'
+										>
+											<ArrowRight />
+										</Navigator>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+
+						<TableFooter>
+							<TableRow>
+								<TableCell colSpan={7}>
+									<Paginator links={data.meta.links} />
 								</TableCell>
 							</TableRow>
-						))}
-					</TableBody>
-
-					<TableFooter>
-						<TableRow>
-							<TableCell colSpan={7}>
-								<Paginator links={data.meta.links} />
-							</TableCell>
-						</TableRow>
-					</TableFooter>
-				</Table>
+						</TableFooter>
+					</Table>
+				)}
 			</Content>
 			<Outlet />
 		</Fragment>

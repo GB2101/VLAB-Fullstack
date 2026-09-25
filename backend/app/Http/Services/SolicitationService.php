@@ -2,19 +2,18 @@
 
 namespace App\Http\Services;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-
-use App\Models\Solicitation;
-use App\Enums\Category;
 use App\Enums\Priority;
 use App\Enums\Status;
 use App\Http\Requests\StoreSolicitationRequest;
+use App\Models\Solicitation;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class SolicitationService
 {
-    public function create(StoreSolicitationRequest $request): Solicitation {
+    public function create(StoreSolicitationRequest $request): Solicitation
+    {
         $status = Status::Received;
         $priority = $request->input('prioridade');
         $category = $request->input('categoria');
@@ -33,10 +32,11 @@ class SolicitationService
         return $solicitation;
     }
 
-    public function statusTransition(Solicitation $solicitation, Status $target) {
+    public function statusTransition(Solicitation $solicitation, Status $target)
+    {
         $status = $solicitation->status;
 
-        if (!$status->validTransition($target)) {
+        if (! $status->validTransition($target)) {
             throw new InvalidArgumentException("A transição do Status {$status->value} para {$target->value} não é permitida.");
         }
 
@@ -45,33 +45,38 @@ class SolicitationService
         ]);
     }
 
-    public function summary() {
-        $collect = fn ($collection) => $collection->reduce(fn ($carry, $item) => $carry + $item->total);
-
+    public function summary(): array
+    {
         $summary = Solicitation::query()
             ->select('status', 'prioridade', DB::raw('count(*) as total'))
             ->groupBy('status', 'prioridade')
             ->get();
 
-        $status = $summary
-            ->groupBy(fn ($item) => $item->status->value)
-            ->map($collect);
+        $countBy = fn (string $key) => $summary
+            ->groupBy(fn ($item) => $item->{$key}->value)
+            ->map(fn ($group) => $group->sum('total'));
 
-        $priority = $summary
-            ->groupBy(fn ($item) => $item->prioridade->value)
-            ->map($collect);
+        $statusCounts = $countBy('status');
+        $priorityCounts = $countBy('prioridade');
+
+        $status = collect(Status::cases())
+            ->mapWithKeys(fn (Status $case) => [$case->value => $statusCounts->get($case->value, 0)]);
+
+        $priority = collect(Priority::cases())
+            ->mapWithKeys(fn (Priority $case) => [$case->value => $priorityCounts->get($case->value, 0)]);
 
         return [
+            'total' => (int) $summary->sum('total'),
             'status' => $status,
             'prioridade' => $priority,
         ];
     }
 
-
-    public static function generateProtocol(string $category): string {
+    public static function generateProtocol(string $category): string
+    {
         do {
             $initials = strtoupper(substr($category, 0, 3));
-            $protocol = $initials . '-' . date('ymd-') . strtoupper(Str::random(6));
+            $protocol = $initials.'-'.date('ymd-').strtoupper(Str::random(6));
         } while (Solicitation::where('protocolo', $protocol)->exists());
 
         return $protocol;

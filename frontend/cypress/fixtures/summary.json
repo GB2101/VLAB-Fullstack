@@ -1,0 +1,16 @@
+{
+	"total": 12,
+	"status": {
+		"RECEBIDA": 3,
+		"EM_ANALISE": 2,
+		"AGENDADA": 4,
+		"CONCLUIDA": 2,
+		"CANCELADA": 1
+	},
+	"prioridade": {
+		"BAIXA": 5,
+		"MEDIA": 3,
+		"ALTA": 3,
+		"URGENTE": 1
+	}
+}

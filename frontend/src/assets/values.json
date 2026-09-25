@@ -17,5 +17,12 @@
 		"AGENDADA": "Agendada",
 		"CONCLUIDA": "Concluida",
 		"CANCELADA": "Cancelada"
+	},
+	"transitions": {
+		"RECEBIDA": ["EM_ANALISE", "CANCELADA"],
+		"EM_ANALISE": ["AGENDADA", "CANCELADA"],
+		"AGENDADA": ["CONCLUIDA", "CANCELADA"],
+		"CONCLUIDA": [],
+		"CANCELADA": []
 	}
 }

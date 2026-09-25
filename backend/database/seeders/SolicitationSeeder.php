@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Solicitation;
+use Illuminate\Database\Seeder;
 
 class SolicitationSeeder extends Seeder
 {
@@ -13,6 +12,10 @@ class SolicitationSeeder extends Seeder
      */
     public function run(): void
     {
-        Solicitation::factory()->count(50)->create();
+        if (Solicitation::exists()) {
+            return;
+        }
+
+        Solicitation::factory()->count(300)->create();
     }
 }

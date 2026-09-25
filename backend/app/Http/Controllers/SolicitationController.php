@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-
 use App\Enums\Status;
-use App\Models\Solicitation;
 use App\Http\Requests\IndexSolicitationRequest;
-use App\Http\Requests\StoreSolicitationRequest;
 use App\Http\Requests\PatchSolicitationRequest;
-use App\Http\Resources\SolicitationResource;
+use App\Http\Requests\StoreSolicitationRequest;
 use App\Http\Resources\SolicitationCollection;
+use App\Http\Resources\SolicitationResource;
 use App\Http\Services\SolicitationService;
+use App\Models\Solicitation;
+use Exception;
 
 class SolicitationController extends Controller
 {
@@ -45,7 +44,8 @@ class SolicitationController extends Controller
     public function store(StoreSolicitationRequest $request)
     {
         $solicitation = $this->solicitationService->create($request);
-        return response()->json(new SolicitationResource($solicitation), 201);
+
+        return (new SolicitationResource($solicitation))->response()->setStatusCode(201);
     }
 
     /**
@@ -56,7 +56,7 @@ class SolicitationController extends Controller
         return new SolicitationResource($solicitation);
     }
 
-    public function summary()
+    public function summary(): array
     {
         return $this->solicitationService->summary();
     }

@@ -1,3 +1,7 @@
+export interface Resource<T> {
+	data: T;
+}
+
 export interface PageLink {
 	url: string;
 	label: string;

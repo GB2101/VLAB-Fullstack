@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren } from 'react';
+import type { FC } from 'react';
 
 import { Link, type LinkComponentProps } from '@tanstack/react-router';
 import { type VariantProps } from 'class-variance-authority';

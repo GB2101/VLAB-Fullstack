@@ -1,0 +1,14 @@
+{
+	"data": {
+		"id": 99,
+		"protocolo": "EXA-260924-NEW001",
+		"nome_solicitante": "Maria da Silva",
+		"categoria": "EXAME",
+		"prioridade": "URGENTE",
+		"status": "RECEBIDA",
+		"descricao": "Solicitacao de exame de urgencia para avaliacao medica.",
+		"justificativa_prioridade": "Paciente com dor aguda, necessita atendimento prioritario.",
+		"data_criacao": "2026-09-24T12:00:00.000000Z",
+		"data_atualizacao": "2026-09-24T12:00:00.000000Z"
+	}
+}

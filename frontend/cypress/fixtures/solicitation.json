@@ -1,0 +1,14 @@
+{
+	"data": {
+		"id": 42,
+		"protocolo": "EXA-260115-XYZ789",
+		"nome_solicitante": "Joana Lima",
+		"categoria": "EXAME",
+		"prioridade": "ALTA",
+		"status": "AGENDADA",
+		"descricao": "Exame de imagem para avaliacao.",
+		"justificativa_prioridade": null,
+		"data_criacao": "2026-01-15T08:30:00.000000Z",
+		"data_atualizacao": "2026-01-16T09:00:00.000000Z"
+	}
+}

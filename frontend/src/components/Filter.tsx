@@ -1,5 +1,5 @@
 import type { FC, PropsWithChildren } from 'react';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 
 import {
 	Combobox,
@@ -23,6 +23,7 @@ interface ItemsType {
 
 interface Props extends PropsWithChildren {
 	id: string;
+	defaultValue?: string[];
 	items: Record<string, string>;
 	onValueChange: (values: string[]) => void;
 }
@@ -30,12 +31,18 @@ interface Props extends PropsWithChildren {
 export const Filter: FC<Props> = (props) => {
 	const anchor = useComboboxAnchor();
 
-	const [state, setState] = useState<ItemsType[]>([]);
+	const items = useMemo(
+		() =>
+			Object.keys(props.items).map<ItemsType>((key) => ({
+				id: key,
+				label: props.items[key],
+			})),
+		[props.items],
+	);
 
-	const items = Object.keys(props.items).map<ItemsType>((key) => ({
-		id: key,
-		label: props.items[key],
-	}));
+	const defaultValue = items.filter((item) =>
+		props.defaultValue?.includes(item.id),
+	);
 
 	return (
 		<div className='flex flex-col gap-2'>
@@ -45,8 +52,11 @@ export const Filter: FC<Props> = (props) => {
 				multiple
 				autoHighlight
 				items={items}
+				value={defaultValue}
+				isItemEqualToValue={(a: ItemsType, b: ItemsType) =>
+					a.id === b.id
+				}
 				onValueChange={(values: ItemsType[]) => {
-					console.log(values);
 					props.onValueChange(values.map((item) => item.id));
 				}}
 			>

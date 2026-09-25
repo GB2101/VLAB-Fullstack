@@ -1,0 +1,54 @@
+{
+	"data": [
+		{
+			"id": 1,
+			"protocolo": "CON-260101-AAA111",
+			"nome_solicitante": "Ana Pereira",
+			"categoria": "CONSULTA",
+			"prioridade": "BAIXA",
+			"status": "RECEBIDA",
+			"descricao": "Consulta de rotina.",
+			"justificativa_prioridade": null,
+			"data_criacao": "2026-01-01T10:00:00.000000Z",
+			"data_atualizacao": "2026-01-01T10:00:00.000000Z"
+		},
+		{
+			"id": 2,
+			"protocolo": "EXA-260102-BBB222",
+			"nome_solicitante": "Bruno Costa",
+			"categoria": "EXAME",
+			"prioridade": "ALTA",
+			"status": "EM_ANALISE",
+			"descricao": "Exame de sangue.",
+			"justificativa_prioridade": null,
+			"data_criacao": "2026-01-02T10:00:00.000000Z",
+			"data_atualizacao": "2026-01-03T10:00:00.000000Z"
+		},
+		{
+			"id": 3,
+			"protocolo": "VAC-260103-CCC333",
+			"nome_solicitante": "Carla Souza",
+			"categoria": "VACINACAO",
+			"prioridade": "URGENTE",
+			"status": "CANCELADA",
+			"descricao": "Vacinacao contra gripe.",
+			"justificativa_prioridade": "Paciente em grupo de risco.",
+			"data_criacao": "2026-01-03T10:00:00.000000Z",
+			"data_atualizacao": "2026-01-04T10:00:00.000000Z"
+		}
+	],
+	"meta": {
+		"path": "http://localhost:8000/api/v1/solicitacoes",
+		"from": 1,
+		"to": 3,
+		"total": 3,
+		"per_page": 15,
+		"current_page": 1,
+		"last_page": 1,
+		"links": [
+			{ "url": null, "label": "&laquo; Previous", "page": null, "active": false },
+			{ "url": "?page=1", "label": "1", "page": 1, "active": true },
+			{ "url": null, "label": "Next &raquo;", "page": null, "active": false }
+		]
+	}
+}

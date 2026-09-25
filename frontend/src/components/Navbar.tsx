@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 
-import { Button } from './ui/button';
 import { House, ClipboardPlus, Plus } from 'lucide-react';
 
 import { Navigator } from './Navigator';

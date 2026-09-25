@@ -37,9 +37,10 @@ RUN composer install --no-interaction --optimize-autoloader
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html
+RUN chmod +x docker-entrypoint.sh
 USER www-data
 
 EXPOSE 8000
 
-# 3. Use standard Artisan serve to run the app
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Run pending migrations and seeders before starting the server
+ENTRYPOINT ["./docker-entrypoint.sh"]
